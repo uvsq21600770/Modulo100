@@ -2,6 +2,7 @@
 #include <stdlib.h> 
 #include <sys/types.h>
 #include <unistd.h>
+#include <math.h>
 
 #define RM ((double)((1L<<31) - 1))
 
@@ -38,6 +39,11 @@ int arriveGratuit(float p0, float p2)
     else return 1;
 }
 
+double exp(double lambda)
+{
+    return -log(unif())/lambda;
+}
+
 int nb_arrivees(float p0, float p2)
 {
     printf("p = %f --- p1 = %f --- p2 = %f  => ", p0, 1-p0-p2, p2);
@@ -58,14 +64,25 @@ int nb_arrivees(float p0, float p2)
 
 }
 
+int cmpfunc (const void * a, const void * b)
+{
+    double val1 = *(double*)a;
+    double val2 = *(double*)b;
+
+    if(val1 < val2) return -1;
+    if(val1 > val2) return 1;
+    return 0;
+
+}
+
 int main()
 {
     long int res = 0;
     unsigned int seed = getpid();
     printf("Seed: <%d>\n", seed);
 
-    //srandom(seed);
-    srandom(1);
+    srandom(seed);
+    //srandom(1);
     for(int i = 0; i < 10; i++)
     {
         res = random();
@@ -132,4 +149,32 @@ int main()
     {
         printf("T[%d] = %d\n", i, T[i]);
     }
+
+    printf("\nExponentielle\n");
+    double lambda = 1.0;
+    double somme = 0.0;
+    int N = 10000;
+    double D[N];
+
+
+    for(int i = 0; i < N; i++)
+    {
+        D[i] = exp(lambda);
+        //res_d = exp(lambda);
+        //somme += res_d;
+        //printf("%9.6lf\n", D[i]);
+    }
+    //printf("Moy      = %lf\n", somme/N);
+    //printf("1/lambda = %lf\n", 1.0/lambda);
+
+    qsort(D, N, sizeof(double), cmpfunc);
+
+    for(int i = 0; i < 100; i++)
+    {
+        printf("%lf\n", D[i]);
+    }
+
+    
+
+    return 0;
 }
