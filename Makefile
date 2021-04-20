@@ -1,6 +1,6 @@
 run: TD2
 	./TD2
-	gnuplot aff.gplt
+	#gnuplot aff.gplt
 
 TD2: TD2.c
 	gcc -Wall -o TD2 TD2.c -lm

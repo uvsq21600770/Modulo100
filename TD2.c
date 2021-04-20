@@ -77,17 +77,19 @@ ECHEANCIER ajouter_evenement(ECHEANCIER E, double date, int nom_event)
     return E;
 }
 
+#define DANSFIC
 //Fonction de simulation
 #define TMAX 1e5
 double simul (double p0, double p1, double p2)
 {
+#ifdef DANSFIC    
     FILE *F = fopen("file.data", "w");
     if(F == NULL) exit(4);
+#endif
 
     // Les variables
     unsigned long int T = 0; // Date de simulation
     unsigned long int N = 0; // Nombre de client dans la file
-    double nb_moy_cli = 0.0;
     double S = 0.0; // Somme du nombre client
 
     ECHEANCIER E = NULL;
@@ -98,7 +100,9 @@ double simul (double p0, double p1, double p2)
     {        
         e = premier_evenement(&E);
         T = e->date;
+#ifdef DANSFIC  
 fprintf(F, "%lu %lu %lf\n", T, N, S/(T+1));
+#endif
         if (e->nom_event == AC) {
             N = N + generer_arrivees(p0, p1, p2); // Les arrivees
             S = S + N;
@@ -107,15 +111,25 @@ fprintf(F, "%lu %lu %lf\n", T, N, S/(T+1));
             E = ajouter_evenement(E, T+1, 1);
         }
     }
+#ifdef DANSFIC      
     fclose(F);
-    return nb_moy_cli;
+#endif
+    return S/(T+1);
 }
 
 int main()
 {
     unsigned int seed = getpid();
     srandom(seed);
-
-    simul(0.35, 0.35, 0.3);
+    double nbmoy;
+    double p0, p1, p2;
+    p0 = 0.5;
+    for(p2 = 0.0; p2 < 0.9; p2+=0.05)
+    {
+        p1 = 1.0 - p0 - p2;
+        nbmoy = simul(p0, p1, p2);
+    printf("%lf %lf %lf\n",p2 , p1+2*p2, nbmoy);
+    }
+    
     return 0;
 }
