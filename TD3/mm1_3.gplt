@@ -1,0 +1,5 @@
+set term pdf
+set output "mm1_3.pdf"
+set xlabel "rho"
+set ylabel "Nb moy de clients"
+plot "mm1_3.data" with lp
